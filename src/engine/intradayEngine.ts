@@ -1,5 +1,6 @@
 import { getGiftNiftyChange } from "../data/global";
 import { fetchPrevDayNifty } from "../data/nse";
+import { selectOptionStrike } from "./optionEngine";
 import { decideStrategy } from "./strategyEngine";
 
 export async function generateIntradayPlan() {
@@ -23,6 +24,11 @@ export async function generateIntradayPlan() {
         gift.last
     );
 
+    const option = selectOptionStrike(
+        gift.last,
+        strategy.direction
+    );
+
     return {
         prev,
         gift,
@@ -31,5 +37,6 @@ export async function generateIntradayPlan() {
             percent: gapPercent,
         },
         strategy,
+        option
     };
 }

@@ -1,15 +1,13 @@
-import { StrategyResult } from "../types";
-
 export function decideStrategy(
     gap: string,
     prevHigh: number,
     prevLow: number,
     gift: number
-): StrategyResult {
+) {
     if (gap === "GAP_UP") {
         return {
             bias: "Bearish Fade",
-            direction: "SELL",
+            direction: "SELL" as const,
             trade: `Sell below ${prevHigh}`,
             sl: prevHigh + 60,
             t1: prevLow + 50,
@@ -20,7 +18,7 @@ export function decideStrategy(
     if (gap === "GAP_DOWN") {
         return {
             bias: "Bullish Reversal",
-            direction: "BUY",
+            direction: "BUY" as const,
             trade: `Buy above ${prevLow}`,
             sl: prevLow - 60,
             t1: prevHigh - 50,
@@ -30,7 +28,7 @@ export function decideStrategy(
 
     return {
         bias: "Range Breakout",
-        direction: "NEUTRAL",
+        direction: "NEUTRAL" as const,
         trade: `Buy above ${prevHigh} / Sell below ${prevLow}`,
         sl: 60,
         t1: 80,

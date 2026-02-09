@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/preMarket.ts"
+    "start": "ts-node src/preMarket.ts",
+    "live": "ts-node src/app.ts"
   },
   "repository": {
     "type": "git",
