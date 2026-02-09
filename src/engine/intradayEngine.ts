@@ -1,39 +1,35 @@
-import { getNiftyPrevDay } from "../data/market";
 import { getGiftNiftyChange } from "../data/global";
-import { detectGap } from "./gapDetector";
+import { fetchPrevDayNifty } from "../data/nse";
 import { decideStrategy } from "./strategyEngine";
-import { buildMessage } from "./messageBuilder";
-import { buildOptionTrade } from "../options/optionTradeBuilder";
-
-export type TradeDirection = "BUY" | "SELL" | "NEUTRAL";
 
 export async function generateIntradayPlan() {
-    const prev = await getNiftyPrevDay();
     const gift = await getGiftNiftyChange();
+    if (!gift) throw new Error("Gift Nifty data unavailable");
 
-    if (!prev) {
-        throw new Error("Previous day candle missing. Market closed / holiday / API delay.");
-    }
-    if (!gift) throw new Error("Global data fetch failed");
+    const prev = await fetchPrevDayNifty();
 
-    const gap = detectGap(prev.close, gift.last);
+    const gapPercent =
+        ((gift.last - prev.close) / prev.close) * 100;
+
+    let gapType = "FLAT";
+
+    if (gapPercent > 0.5) gapType = "GAP_UP";
+    else if (gapPercent < -0.5) gapType = "GAP_DOWN";
 
     const strategy = decideStrategy(
-        gap.type,
+        gapType,
         prev.high,
         prev.low,
         gift.last
     );
 
-    const optionTrade = buildOptionTrade(gift.last, strategy);
-
-    const message = buildMessage({
+    return {
         prev,
         gift,
-        gap,
+        gap: {
+            type: gapType,
+            percent: gapPercent,
+        },
         strategy,
-        optionTrade
-    });
-
-    return message;
+    };
 }
