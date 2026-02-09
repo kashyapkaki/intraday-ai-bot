@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 if (process.env.GITHUB_ACTIONS !== "true") {
     dotenv.config();
 }
-const token = process.env.TELEGRAM_BOT_TOKEN!;
-const chatId = process.env.TELEGRAM_CHAT_ID!;
+const token = process.env.TELEGRAM_TOKEN!;
+const chatId = process.env.CHAT_ID!;
 
 const bot = new TelegramBot(token, { polling: false });
 
