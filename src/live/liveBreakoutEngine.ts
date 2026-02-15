@@ -18,10 +18,10 @@ export async function startLiveBreakoutEngine(
 ) {
     console.log("🚀 Live Breakout Engine (WebSocket Mode) Started");
 
-    setTimeout(async () => {
-        console.log("Simulating breakout...");
-        await handleBreakout("BUY", prevHigh + 20);
-    }, 5000);
+    // setTimeout(async () => {
+    //     console.log("Simulating breakout...");
+    //     await handleBreakout("BUY", prevHigh + 20);
+    // }, 5000);
 
     const ticker = createTicker();
 
