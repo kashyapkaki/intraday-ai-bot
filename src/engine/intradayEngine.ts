@@ -1,6 +1,6 @@
 import { getGiftNiftyChange } from "../data/global";
 import { fetchPrevDayNifty } from "../data/nse";
-import { selectOptionStrike } from "./optionEngine";
+import { selectOptionStrike } from "../options/optionEngine";
 import { decideStrategy } from "./strategyEngine";
 
 export async function generateIntradayPlan() {

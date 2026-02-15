@@ -26,3 +26,20 @@ export async function getGiftNiftyChange() {
         return null;
     }
 }
+
+export function getCurrentWeeklyExpiry(): string {
+    const now = new Date();
+
+    // Find next Thursday
+    const day = now.getDay();
+    const diff = (4 - day + 7) % 7; // 4 = Thursday
+    const nextThursday = new Date(now);
+    nextThursday.setDate(now.getDate() + diff);
+
+    const year = nextThursday.getFullYear().toString().slice(-2);
+    const month = nextThursday.toLocaleString("en-US", { month: "short" }).toUpperCase();
+    const date = nextThursday.getDate().toString().padStart(2, "0");
+
+    return `${year}${month}`;
+}
+

@@ -1,17 +1,26 @@
+import { getCurrentWeeklyExpiry } from "../data/global";
 import { TradeDirection, OptionType } from "../types";
 
 export function selectOptionStrike(
     spot: number,
     direction: TradeDirection
-): { strike: number; type: OptionType } | null {
+): { symbol: string, strike: number; type: OptionType } | null {
 
-    if (direction === "NEUTRAL") return null;
+    const strike = Math.round(spot / 50) * 50;
+    const expiry = getCurrentWeeklyExpiry();
+    const type = direction === "BUY" ? "CE" : "PE";
 
-    const base = Math.round(spot / 50) * 50;
+    return {
+        symbol: `NIFTY${expiry}${strike}${type}`,
+        strike,
+        type,
+    };
+}
 
-    if (direction === "BUY") {
-        return { strike: base + 50, type: "CE" };
-    }
-
-    return { strike: base - 50, type: "PE" };
+export function buildOptionSymbol(
+    strike: number,
+    type: OptionType
+): string {
+    const expiry = getCurrentWeeklyExpiry();
+    return `NFO:NIFTY${expiry}${strike}${type}`;
 }

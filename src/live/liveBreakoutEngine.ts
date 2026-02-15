@@ -1,61 +1,142 @@
-import { kite } from "../data/zerodha";
+import { createTicker, kite } from "../data/zerodha";
 import { sendMessage } from "../bot/telegram";
+import { TOKENS } from "../data/market";
+import { buildOptionSymbol, selectOptionStrike } from "../options/optionEngine";
+
+let triggered = false;
+
+let breakoutStartTime: number | null = null;
+let breakdownStartTime: number | null = null;
+
+const SUSTAIN_DURATION = 10 * 1000; // 10 seconds
 
 
-const NIFTY = 256265;
+export async function startLiveBreakoutEngine(
+    prevHigh: number,
+    prevLow: number
+) {
+    console.log("🚀 Live Breakout Engine (WebSocket Mode) Started");
 
+    setTimeout(async () => {
+        console.log("Simulating breakout...");
+        await handleBreakout("BUY", prevHigh + 20);
+    }, 5000);
 
-let lastSignal: "BUY" | "SELL" | null = null;
+    const ticker = createTicker();
 
+    ticker.on("ticks", async (ticks: any[]) => {
+        if (triggered) return;
 
-export async function runLiveBreakoutEngine() {
-    console.log("🚀 Live Breakout Engine Started...");
+        const niftyTick = ticks.find(
+            (t) => t.instrument_token === TOKENS.NIFTY
+        );
 
+        if (!niftyTick) return;
 
-    setInterval(async () => {
-        try {
-            const to = new Date();
-            const from = new Date();
-            from.setMinutes(from.getMinutes() - 30);
+        const spot = niftyTick.last_price;
+        const now = Date.now();
 
+        // 🔥 BREAKOUT (Above PDH)
+        if (spot > prevHigh) {
 
-            const candles = await kite.getHistoricalData(
-                NIFTY,
-                "5minute",
-                from,
-                to,
-                false,
-                false
-            );
-
-
-            if (!candles.length) return;
-
-
-            const prev = candles[candles.length - 2];
-            const curr = candles[candles.length - 1];
-
-
-            const highBreak = curr.close > prev.high;
-            const lowBreak = curr.close < prev.low;
-
-
-            if (highBreak && lastSignal !== "BUY") {
-                lastSignal = "BUY";
-                await sendMessage(
-                    `🚀 *LIVE BREAKOUT ALERT*\n\nBUY NIFTY ABOVE ${prev.high}\nSL: ${prev.low}\nTargets: +40 / +70`
-                );
+            if (!breakoutStartTime) {
+                breakoutStartTime = now;
+                console.log("Breakout detected, waiting sustain...");
             }
 
-
-            if (lowBreak && lastSignal !== "SELL") {
-                lastSignal = "SELL";
-                await sendMessage(
-                    `🚀 *LIVE BREAKDOWN ALERT*\n\nSELL NIFTY BELOW ${prev.low}\nSL: ${prev.high}\nTargets: +40 / +70`
-                );
+            if (now - breakoutStartTime >= SUSTAIN_DURATION) {
+                triggered = true;
+                await handleBreakout("BUY", spot);
             }
-        } catch (err) {
-            console.error("Live engine error", err);
+
+        } else {
+            breakoutStartTime = null;
         }
-    }, 5 * 60 * 1000); // every 5 minutes
+
+        // 🔥 BREAKDOWN (Below PDL)
+        if (spot < prevLow) {
+
+            if (!breakdownStartTime) {
+                breakdownStartTime = now;
+                console.log("Breakdown detected, waiting sustain...");
+            }
+
+            if (now - breakdownStartTime >= SUSTAIN_DURATION) {
+                triggered = true;
+                await handleBreakout("SELL", spot);
+            }
+
+        } else {
+            breakdownStartTime = null;
+        }
+    });
+
+    ticker.on("connect", () => {
+        console.log("✅ WebSocket Connected");
+        ticker.subscribe([TOKENS.NIFTY]);
+        ticker.setMode(ticker.modeFull, [TOKENS.NIFTY]);
+    });
+
+    ticker.connect();
 }
+
+async function handleBreakout(direction: "BUY" | "SELL", spot: number) {
+
+    const option = selectOptionStrike(spot, direction);
+    if (!option) return;
+
+    // Build full Zerodha tradingsymbol
+    const symbol = buildOptionSymbol(option.strike, option.type);
+
+    console.log("Symbol built:", symbol);
+
+    try {
+        const ltpData = await kite.getLTP([symbol]);
+
+        if (!ltpData || !ltpData[symbol]) {
+            console.error("No LTP data returned for", symbol);
+            return;
+        }
+
+        const premium = ltpData[symbol].last_price;
+
+        console.log("Premium:", premium);
+
+        // Risk model (25% SL, 40% & 80% targets)
+        const sl = Math.round(premium * 0.75);
+        const t1 = Math.round(premium * 1.4);
+        const t2 = Math.round(premium * 1.8);
+
+        await sendMessage(`
+🚨 LIVE BREAKOUT ALERT — NIFTY
+
+Direction: ${direction}
+Spot: ${spot}
+
+Strike: ${option.strike} ${option.type}
+Symbol: ${symbol}
+
+Entry: ${premium}
+Stop Loss: ${sl}
+
+Target 1: ${t1}
+Target 2: ${t2}
+
+⚡ Real-Time Zerodha Premium Based Alert Built With 💙 By Kashyap
+    `);
+
+        console.log("🔥 Breakout Alert Sent:", symbol);
+
+    } catch (err) {
+        console.error("Error fetching LTP:", err);
+    }
+}
+
+function buildOptionTradePlan(premium: number) {
+    return {
+        sl: Math.round(premium * 0.75),       // 25% SL
+        t1: Math.round(premium * 1.4),        // 40% gain
+        t2: Math.round(premium * 1.8),        // 80% gain
+    };
+}
+

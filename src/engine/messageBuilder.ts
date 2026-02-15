@@ -34,5 +34,6 @@ ${optionMsg}
 ━━━━━━━━━━━━━━━━━━
 
 ⚡ Confidence: 80%
+⚡ Real-Time Zerodha Pre-market Alert Built With 💙 By Kashyap
 `;
 }
