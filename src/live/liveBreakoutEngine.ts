@@ -2,6 +2,7 @@ import { createTicker, kite } from "../data/zerodha";
 import { sendMessage } from "../bot/telegram";
 import { TOKENS } from "../data/market";
 import { buildOptionSymbol, selectOptionStrike } from "../options/optionEngine";
+import { resolveNiftyOption } from "../options/instrumentResolver";
 
 let triggered = false;
 
@@ -85,8 +86,17 @@ async function handleBreakout(direction: "BUY" | "SELL", spot: number) {
     const option = selectOptionStrike(spot, direction);
     if (!option) return;
 
-    // Build full Zerodha tradingsymbol
-    const symbol = buildOptionSymbol(option.strike, option.type);
+    const tradingsymbol = await resolveNiftyOption(
+        option.strike,
+        option.type
+    );
+
+    if (!tradingsymbol) {
+        console.error("❌ Option contract not found");
+        return;
+    }
+
+    const symbol = `NFO:${tradingsymbol}`;
 
     console.log("Symbol built:", symbol);
 

@@ -6,7 +6,7 @@ export function selectOptionStrike(
     direction: TradeDirection
 ): { symbol: string, strike: number; type: OptionType } | null {
 
-    const strike = Math.round(spot / 50) * 50;
+    const strike = Math.floor(spot / 50) * 50;
     const expiry = getCurrentWeeklyExpiry();
     const type = direction === "BUY" ? "CE" : "PE";
 

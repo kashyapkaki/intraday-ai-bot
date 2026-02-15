@@ -23,12 +23,22 @@ export async function fetchPreviousDay(token: number) {
         false
     );
 
-    if (!data || data.length < 2) {
-        throw new Error("Not enough historical candle data received from Zerodha");
+    if (!data || data.length === 0) {
+        throw new Error("No historical data received");
     }
 
-    return data[data.length - 2]; // confirmed previous trading day candle
+    const lastCandle = data[data.length - 1];
+    const today = new Date();
+
+    const isToday =
+        new Date(lastCandle.date).toDateString() ===
+        today.toDateString();
+
+    return isToday
+        ? data[data.length - 2]
+        : lastCandle;
 }
+
 
 /* ✅ ADD THIS */
 export async function getNiftyPrevDay() {
