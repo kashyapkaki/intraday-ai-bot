@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/preMarket.ts",
-    "live": "ts-node src/live.ts",
-    "login": "ts-node src/login.ts"
+    "login": "ts-node src/login.ts",
+    "expiry": "ts-node src/expiry/expiryEngine.ts"
   },
   "repository": {
     "type": "git",
