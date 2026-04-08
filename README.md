@@ -4,6 +4,8 @@
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![License: Unspecified](https://img.shields.io/badge/license-unspecified-lightgrey.svg)]()
 
+[![README powered by ReadmeAI](http://localhost:5000/api/badge?repo=https%3A%2F%2Fgithub.com%2Fkashyapkaki%2Fintraday-ai-bot)](http://localhost:5173)
+
 ## Overview
 
 `intraday-ai-bot` is a TypeScript-based CLI tool designed for automating and managing intraday trading strategies. It integrates with the Kite Connect API and provides advanced features such as institutional data analysis, expiry management, risk controls, option strategy engines, and automated notifications via a Telegram bot. The tool leverages scheduled tasks to streamline trading operations and delivers actionable insights to users in real time.
