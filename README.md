@@ -1,73 +1,124 @@
-# 📊 Intraday AI Breakout Bot — Premarket Edition
+# intraday-ai-bot
 
-A lightweight premarket analysis engine for NIFTY index gap detection and option strike suggestions. Built with TypeScript and Node.js. The bot fetches previous day OHLC, monitors Gift Nifty, calculates gap type and market bias, selects an ATM option strike, and posts a structured trade plan to Telegram.
+[![TypeScript](https://img.shields.io/badge/language-typescript-blue.svg)](https://www.typescriptlang.org/)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+[![License: Unspecified](https://img.shields.io/badge/license-unspecified-lightgrey.svg)]()
 
-## What this repo contains
+## Overview
 
-- **Premarket analysis**: gap detection, bias determination, and trade level calculation.
-- **Option selection**: ATM strike picker based on direction.
-- **Integrations**: Telegram notifications and Zerodha broker connection helpers.
-- **Market data**: NSE data fetching and Gift Nifty monitoring.
+`intraday-ai-bot` is a TypeScript-based CLI tool designed for automating and managing intraday trading strategies. It integrates with the Kite Connect API and provides advanced features such as institutional data analysis, expiry management, risk controls, option strategy engines, and automated notifications via a Telegram bot. The tool leverages scheduled tasks to streamline trading operations and delivers actionable insights to users in real time.
 
-## Quick start
+## Tech Stack
 
-1. Install dependencies:
+- **Language:** TypeScript
+- **Runtime:** Node.js
+- **Key Libraries:**
+  - [`axios`](https://github.com/axios/axios) — HTTP requests
+  - [`dotenv`](https://github.com/motdotla/dotenv) — Environment variable management
+  - [`kiteconnect`](https://github.com/zerodhatech/kiteconnectjs) — Kite Connect Trading API
+  - [`node-cron`](https://github.com/node-cron/node-cron) — Task scheduling
+  - [`node-telegram-bot-api`](https://github.com/yagop/node-telegram-bot-api) — Telegram bot integration
 
-```powershell
-npm install
+## Prerequisites
+
+- **Node.js** (v14 or higher recommended)
+- **npm** (Node Package Manager)
+- **Kite Connect API credentials** (for trading integration)
+- **Telegram Bot Token** (for bot notifications)
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/kashyapkaki/intraday-ai-bot.git
+   cd intraday-ai-bot
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables:**
+   - Create a `.env` file in the project root.
+   - Add your Kite Connect and Telegram Bot credentials as environment variables (see `.env.example` if available).
+
+## Usage
+
+1. **Authenticate with Kite Connect API:**
+   ```bash
+   npm run login
+   ```
+   This command runs `src/login.ts` to perform authentication with the trading API.
+
+2. **Start pre-market data processing:**
+   ```bash
+   npm start
+   ```
+   This executes `src/preMarket.ts` to process pre-market data and initialize strategies.
+
+3. **Run expiry management engine:**
+   ```bash
+   npm run expiry
+   ```
+   This triggers `src/expiry/expiryEngine.ts` for expiry-related strategy execution.
+
+4. **Receive trade signals via Telegram bot:**
+   - Ensure your bot token is set in your `.env` file.
+   - The bot will send notifications on trade signals and updates.
+
+5. **Scheduled tasks:**
+   - Trading strategies and notifications are automatically scheduled and executed using `node-cron`.
+
+## Project Structure
+
+```
+intraday-ai-bot/
+├── src/
+│   ├── bot/
+│   │   └── telegram.ts               # Telegram bot integration
+│   ├── data/
+│   │   ├── global.ts                 # Global data utilities
+│   │   ├── institutionalFetcher.ts   # Institutional data fetching
+│   │   ├── nse.ts                    # NSE data utilities
+│   │   └── zerodha.ts                # Zerodha data integration
+│   ├── engine/
+│   │   ├── institutionalBias.ts      # Institutional bias analysis
+│   │   ├── intradayEngine.ts         # Intraday trading engine
+│   │   ├── messageBuilder.ts         # Notification/message builder
+│   │   └── strategyEngine.ts         # Core strategy logic
+│   ├── expiry/
+│   │   ├── capitalManager.ts         # Capital management for expiry
+│   │   ├── expiryEngine.ts           # Expiry strategy engine
+│   │   ├── hedgeManager.ts           # Hedge management
+│   │   ├── kiteStream.ts             # Kite Connect streaming
+│   │   ├── positionManager.ts        # Position management
+│   │   ├── riskManager.ts            # Risk control utilities
+│   │   └── strengthEngine.ts         # Market strength analysis
+│   ├── options/
+│   │   └── optionEngine.ts           # Option strategy engine
+│   ├── login.ts                      # Kite Connect authentication
+│   ├── preMarket.ts                  # Pre-market data processing entrypoint
+│   └── types.ts                      # TypeScript types & interfaces
+├── package.json
+├── tsconfig.json
+└── ...
 ```
 
-2. Create a `.env` in the project root with at least:
+## Contributing
 
-```text
-TELEGRAM_TOKEN=your_bot_token
-CHAT_ID=your_chat_id
-```
+Contributions are welcome! To contribute:
 
-3. Run the premarket engine (generates plan and sends Telegram message):
+1. **Fork** this repository.
+2. **Create a branch** for your feature or bugfix (`git checkout -b feature/my-feature`).
+3. **Commit** your changes with clear messages.
+4. **Push** to your fork and submit a **Pull Request**.
 
-```powershell
-npm run premarket
-```
+Please ensure your code follows the existing style and passes relevant checks.
 
-## High-level overview
+## License
 
-The codebase is organized under `src/`. All logic is dedicated to premarket planning:
+This project does not specify a license. Please contact the repository owner for usage permissions.
 
-- `preMarket.ts`: main entry point that orchestrates the premarket plan.
-- `engine/`: core analysis logic (gap detection, strategy selection, message building).
-- `data/`: NSE data fetching and Zerodha broker helpers.
-- `bot/`: Telegram notifications.
-- `types.ts`: shared TypeScript definitions.
-
-## File map (what each file does)
-
-**Top-level scripts**
-
-- `preMarket.ts` — Premarket engine entry: fetches previous-day OHLC, computes gap and bias, selects ATM option, and sends Telegram plan.
-- `types.ts` — Shared TypeScript types and interfaces used across the project.
-
-**Bot integration**
-
-- `bot/telegram.ts` — Telegram client wrapper: formats messages, handles sending to a chat ID.
-
-**Data helpers (`data/`)**
-
-- `data/global.ts` — Gift Nifty fetcher; computes current weekly option expiry.
-- `data/nse.ts` — NSE API helpers to fetch previous-day NIFTY OHLC.
-- `data/zerodha.ts` — Zerodha broker API client initialization and instrument loader for NFO options.
-
-**Core engines (`engine/`)**
-
-- `engine/intradayEngine.ts` — Orchestrates the premarket plan: calls Gift Nifty fetcher, previous-day data, gap detection, strategy selection, and option strike picker.
-- `engine/messageBuilder.ts` — Builds a structured Telegram message from the premarket plan output.
-
-## Design contract (short)
-
-- Input: market OHLC/quotes, configured symbols, and environment credentials.
-- Output: structured Telegram messages and in-memory plan objects.
-- Error modes: network/data failures are logged; missing credentials disable notifications.
-
-## Risk disclaimer
-
-This project generates alerts only. It does not execute live orders. Trading involves risk; use proper risk management.
+---
+*README generated by [ReadmeAI](https://readme-ai.com)*
