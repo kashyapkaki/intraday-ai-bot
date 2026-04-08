@@ -1,30 +1,30 @@
 # intraday-ai-bot
 
-[![TypeScript](https://img.shields.io/badge/language-typescript-blue.svg)](https://www.typescriptlang.org/)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![License: Unspecified](https://img.shields.io/badge/license-unspecified-lightgrey.svg)]()
+A CLI tool for automated intraday trading with Telegram bot integration, built in TypeScript.
+
+![TypeScript](https://img.shields.io/badge/language-TypeScript-blue.svg)
+![CLI Tool](https://img.shields.io/badge/tool-CLI-green.svg)
 
 ## Overview
 
-`intraday-ai-bot` is a TypeScript-based CLI tool designed for automating and managing intraday trading strategies. It integrates with the Kite Connect API and provides advanced features such as institutional data analysis, expiry management, risk controls, option strategy engines, and automated notifications via a Telegram bot. The tool leverages scheduled tasks to streamline trading operations and delivers actionable insights to users in real time.
+**intraday-ai-bot** is a command-line tool designed for automated intraday trading operations. It integrates with the Kite Connect API for trading execution, analyzes market data using institutional bias and strategy engines, and manages expiry and risk through dedicated modules. The project features a Telegram bot for real-time notifications and command handling, and automates key trading processes with scheduled tasks using `node-cron`.
 
 ## Tech Stack
 
 - **Language:** TypeScript
-- **Runtime:** Node.js
-- **Key Libraries:**
-  - [`axios`](https://github.com/axios/axios) — HTTP requests
-  - [`dotenv`](https://github.com/motdotla/dotenv) — Environment variable management
-  - [`kiteconnect`](https://github.com/zerodhatech/kiteconnectjs) — Kite Connect Trading API
-  - [`node-cron`](https://github.com/node-cron/node-cron) — Task scheduling
-  - [`node-telegram-bot-api`](https://github.com/yagop/node-telegram-bot-api) — Telegram bot integration
+- **Frameworks & Libraries:**
+  - [axios](https://www.npmjs.com/package/axios) – HTTP requests
+  - [dotenv](https://www.npmjs.com/package/dotenv) – Environment variable management
+  - [kiteconnect](https://www.npmjs.com/package/kiteconnect) – Kite Connect API integration
+  - [node-cron](https://www.npmjs.com/package/node-cron) – Scheduled task automation
+  - [node-telegram-bot-api](https://www.npmjs.com/package/node-telegram-bot-api) – Telegram bot integration
 
 ## Prerequisites
 
-- **Node.js** (v14 or higher recommended)
-- **npm** (Node Package Manager)
-- **Kite Connect API credentials** (for trading integration)
-- **Telegram Bot Token** (for bot notifications)
+- **Node.js** (v14+ recommended)
+- **npm** or **yarn**
+- Access credentials for [Kite Connect API](https://kite.trade/)
+- Telegram bot token (for bot integration)
 
 ## Installation
 
@@ -37,88 +37,105 @@
 2. **Install dependencies:**
    ```bash
    npm install
+   # or, if using yarn:
+   # yarn install
    ```
 
 3. **Configure environment variables:**
    - Create a `.env` file in the project root.
-   - Add your Kite Connect and Telegram Bot credentials as environment variables (see `.env.example` if available).
+   - Add your Kite Connect and Telegram bot credentials.
+   - Example:
+     ```
+     KITE_API_KEY=your_kite_api_key
+     KITE_API_SECRET=your_kite_api_secret
+     TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+     # ...other environment variables as needed
+     ```
 
 ## Usage
 
-1. **Authenticate with Kite Connect API:**
+Typical workflow:
+
+1. **Login to Kite Connect:**
    ```bash
    npm run login
+   # or
+   npx ts-node src/login.ts
    ```
-   This command runs `src/login.ts` to perform authentication with the trading API.
 
 2. **Start pre-market data processing:**
    ```bash
    npm start
+   # or
+   npx ts-node src/preMarket.ts
    ```
-   This executes `src/preMarket.ts` to process pre-market data and initialize strategies.
 
-3. **Run expiry management engine:**
+3. **Run expiry engine for option expiry strategies:**
    ```bash
    npm run expiry
+   # or
+   npx ts-node src/expiry/expiryEngine.ts
    ```
-   This triggers `src/expiry/expiryEngine.ts` for expiry-related strategy execution.
 
-4. **Receive trade signals via Telegram bot:**
-   - Ensure your bot token is set in your `.env` file.
-   - The bot will send notifications on trade signals and updates.
+4. **Interact via Telegram Bot:**
+   - Start your Telegram bot and communicate using your configured bot token.
+   - Receive real-time notifications or send commands.
 
-5. **Scheduled tasks:**
-   - Trading strategies and notifications are automatically scheduled and executed using `node-cron`.
+5. **Automate Tasks:**
+   - Scheduled trading strategies are managed internally using `node-cron`.
 
 ## Project Structure
 
 ```
 intraday-ai-bot/
+├── .github/
+│   └── workflows/
+│       └── readme-ai.yml
 ├── src/
 │   ├── bot/
-│   │   └── telegram.ts               # Telegram bot integration
+│   │   └── telegram.ts            # Telegram bot integration
 │   ├── data/
-│   │   ├── global.ts                 # Global data utilities
-│   │   ├── institutionalFetcher.ts   # Institutional data fetching
-│   │   ├── nse.ts                    # NSE data utilities
-│   │   └── zerodha.ts                # Zerodha data integration
+│   │   ├── global.ts
+│   │   ├── institutionalFetcher.ts
+│   │   ├── nse.ts
+│   │   └── zerodha.ts
 │   ├── engine/
-│   │   ├── institutionalBias.ts      # Institutional bias analysis
-│   │   ├── intradayEngine.ts         # Intraday trading engine
-│   │   ├── messageBuilder.ts         # Notification/message builder
-│   │   └── strategyEngine.ts         # Core strategy logic
+│   │   ├── institutionalBias.ts
+│   │   ├── intradayEngine.ts
+│   │   ├── messageBuilder.ts
+│   │   └── strategyEngine.ts
 │   ├── expiry/
-│   │   ├── capitalManager.ts         # Capital management for expiry
-│   │   ├── expiryEngine.ts           # Expiry strategy engine
-│   │   ├── hedgeManager.ts           # Hedge management
-│   │   ├── kiteStream.ts             # Kite Connect streaming
-│   │   ├── positionManager.ts        # Position management
-│   │   ├── riskManager.ts            # Risk control utilities
-│   │   └── strengthEngine.ts         # Market strength analysis
+│   │   ├── capitalManager.ts
+│   │   ├── expiryEngine.ts
+│   │   ├── hedgeManager.ts
+│   │   ├── kiteStream.ts
+│   │   ├── positionManager.ts
+│   │   ├── riskManager.ts
+│   │   └── strengthEngine.ts
 │   ├── options/
-│   │   └── optionEngine.ts           # Option strategy engine
-│   ├── login.ts                      # Kite Connect authentication
-│   ├── preMarket.ts                  # Pre-market data processing entrypoint
-│   └── types.ts                      # TypeScript types & interfaces
+│   │   └── optionEngine.ts
+│   ├── login.ts                   # Trading API login
+│   ├── preMarket.ts               # Pre-market processing entry point
+│   └── types.ts                   # Type definitions
 ├── package.json
 ├── tsconfig.json
-└── ...
+├── .gitignore
+└── README.md
 ```
 
 ## Contributing
 
-Contributions are welcome! To contribute:
+We welcome contributions! To get started:
 
-1. **Fork** this repository.
-2. **Create a branch** for your feature or bugfix (`git checkout -b feature/my-feature`).
-3. **Commit** your changes with clear messages.
-4. **Push** to your fork and submit a **Pull Request**.
-
-Please ensure your code follows the existing style and passes relevant checks.
+1. **Fork** the repository
+2. **Create** a new branch: `git checkout -b feature/your-feature-name`
+3. **Commit** your changes: `git commit -m 'Add new feature'`
+4. **Push** to your fork: `git push origin feature/your-feature-name`
+5. **Open a Pull Request** describing your changes
 
 ## License
 
-This project does not specify a license. Please contact the repository owner for usage permissions.
+License not specified. Please contact the repository owner for licensing information.
 
 ---
-*README generated by [ReadmeAI](https://readme-ai.com)*
+[![README powered by ReadmeAI](https://img.shields.io/badge/README-powered%20by%20ReadmeAI-4c9be8?style=flat-square&logo=markdown)](https://readme-ai.com)
