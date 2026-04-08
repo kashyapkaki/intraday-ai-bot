@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ts-node src/preMarket.ts",
     "login": "ts-node src/login.ts",
-    "expiry": "ts-node src/expiry/expiryEngine.ts"
+    "expiry": "ts-node src/expiry/expiryEngine.ts",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
