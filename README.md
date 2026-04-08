@@ -4,7 +4,7 @@
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![License: Unspecified](https://img.shields.io/badge/license-unspecified-lightgrey.svg)]()
 
-[![README powered by ReadmeAI](http://localhost:5000/api/badge?repo=https%3A%2F%2Fgithub.com%2Fkashyapkaki%2Fintraday-ai-bot)](http://localhost:5173)
+[![README powered by ReadmeAI](http://localhost:5000/api/badge?repo=https%3A%2F%2Fgithub.com%2Fkashyapkaki%2Fintraday-ai-bot)](http://google.com)
 
 ## Overview
 
