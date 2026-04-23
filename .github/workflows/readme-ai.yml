@@ -18,7 +18,7 @@ jobs:
       - name: Regenerate README with ReadmeAI
         run: |
           RESPONSE=$(curl --silent --show-error --fail --max-time 120 --retry 3 --retry-delay 5 \
-            -X POST "https://www.readmeai.in/api/webhook/regenerate" \
+            -X POST "https://api.readmeai.in/api/webhook/regenerate" \
             -H "Content-Type: application/json" \
             -d '{
               "repoUrl":   "https://github.com/kashyapkaki/intraday-ai-bot",
