@@ -1,134 +1,139 @@
 # intraday-ai-bot
 
-[![TypeScript](https://img.shields.io/badge/language-TypeScript-blue.svg)](https://www.typescriptlang.org/)
-![CLI Tool](https://img.shields.io/badge/tool-CLI-green.svg)
-[![Build Status](https://img.shields.io/github/workflow/status/kashyapkaki/intraday-ai-bot/readme-ai.yml?label=CI)](../../actions)
+![TypeScript](https://img.shields.io/badge/language-TypeScript-blue?style=flat-square)
 
 ## Overview
 
-`intraday-ai-bot` is a modular TypeScript CLI tool designed to automate and optimize intraday trading strategies. It integrates with the Kite Connect API for trading operations, processes pre-market and real-time market data, manages expiry and risk, and provides real-time notifications and command capabilities via a Telegram bot. Institutional bias analysis, scheduled tasks, and robust strategy engines are core features, making this tool suitable for sophisticated trading automation workflows.
+`intraday-ai-bot` is a TypeScript-based automation framework for intraday trading operations and analysis. It integrates with platforms such as Zerodha Kite and Telegram to fetch market data, implement trading strategies, manage positions, and send notifications. The bot schedules tasks, processes institutional activity, and supports expiry and options trading workflows.
 
 ## Tech Stack
 
 - **Language:** TypeScript
+- **Runtime:** Node.js
 - **Key Libraries:**
-  - [axios](https://github.com/axios/axios) – HTTP client
-  - [dotenv](https://github.com/motdotla/dotenv) – Environment variable management
-  - [kiteconnect](https://github.com/zerodhatech/kiteconnectjs) – Kite Connect trading API integration
-  - [node-cron](https://github.com/node-cron/node-cron) – Task scheduling
-  - [node-telegram-bot-api](https://github.com/yagop/node-telegram-bot-api) – Telegram bot integration
+  - [`axios`](https://github.com/axios/axios) (HTTP requests)
+  - [`dotenv`](https://github.com/motdotla/dotenv) (environment variable management)
+  - [`kiteconnect`](https://github.com/zerodhatech/kiteconnectjs) (Zerodha API integration)
+  - [`node-cron`](https://github.com/node-cron/node-cron) (task scheduling)
+  - [`node-telegram-bot-api`](https://github.com/yagop/node-telegram-bot-api) (Telegram bot integration)
+- **Development Tools:**
+  - [`typescript`](https://www.typescriptlang.org/)
+  - [`ts-node`](https://github.com/TypeStrong/ts-node)
+  - [`nodemon`](https://github.com/remy/nodemon)
+  - [`@types/node`, `@types/node-telegram-bot-api`] (Type definitions)
 
 ## Prerequisites
 
-- **Node.js** (v14 or higher recommended)
-- **npm** (Node Package Manager)
-- Access to [Kite Connect API](https://kite.trade/)
-- Telegram bot token (for bot integration)
-- `.env` file with necessary environment variables (e.g., API keys, secrets)
+- **Node.js** (version 14 or above recommended)
+- **npm** (comes with Node.js)
+- Zerodha Kite API credentials (for trading functionalities)
+- Telegram Bot token (for Telegram integration)
+- `.env` file configured with required environment variables
 
 ## Installation
 
-Clone the repository and install dependencies:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/kashyapkaki/intraday-ai-bot.git
+   cd intraday-ai-bot
+   ```
 
-```bash
-git clone https://github.com/kashyapkaki/intraday-ai-bot.git
-cd intraday-ai-bot
-npm install
-```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables:**
+   - Create a `.env` file in the root directory.
+   - Add required credentials, API keys, and settings.
 
 ## Usage
 
-1. **Set up environment variables:**
+### Common Commands
 
-   Create a `.env` file in the project root and add your configuration (Kite Connect API keys, Telegram bot token, etc.).
+- **Start Pre-Market Bot**
+  ```bash
+  npm run start
+  ```
+  Runs `src/preMarket.ts` for pre-market analysis and notifications.
 
-2. **Authenticate with Kite Connect:**
+- **Login to Zerodha Kite**
+  ```bash
+  npm run login
+  ```
+  Runs `src/login.ts` for authentication with Zerodha Kite.
 
-   ```bash
-   npm run login
-   # or
-   npx ts-node src/login.ts
-   ```
+- **Run Expiry Engine**
+  ```bash
+  npm run expiry
+  ```
+  Executes expiry management logic via `src/expiry/expiryEngine.ts`.
 
-3. **Start pre-market data processing:**
+- **Run Tests**
+  ```bash
+  npm test
+  ```
 
-   ```bash
-   npm start
-   # or
-   npx ts-node src/preMarket.ts
-   ```
-
-4. **Manage expiry-related strategies:**
-
-   ```bash
-   npm run expiry
-   # or
-   npx ts-node src/expiry/expiryEngine.ts
-   ```
-
-5. **Use the Telegram bot:**
-
-   - Receive real-time notifications.
-   - Send commands as per bot's capabilities (see `src/bot/telegram.ts` for implementation details).
-
-6. **Develop and test:**
-
-   ```bash
-   npm run test
-   ```
+> All scripts use `ts-node` for direct TypeScript execution.
 
 ## Project Structure
 
 ```
-.
+intraday-ai-bot/
+│
 ├── .github/
 │   └── workflows/
-│       └── readme-ai.yml     # GitHub Actions workflow
+│       └── readme-ai.yml
 ├── src/
 │   ├── bot/
-│   │   └── telegram.ts       # Telegram bot integration
+│   │   └── telegram.ts               # Telegram bot integration logic
 │   ├── data/
-│   │   ├── global.ts         # Global data utilities
-│   │   ├── institutionalFetcher.ts # Institutional data fetching
-│   │   ├── nse.ts            # NSE data handling
-│   │   └── zerodha.ts        # Zerodha API integration
+│   │   ├── global.ts                 # Global data definitions
+│   │   ├── institutionalFetcher.ts   # Fetches institutional trading data
+│   │   ├── nse.ts                    # NSE data utilities
+│   │   └── zerodha.ts                # Zerodha data utilities
 │   ├── engine/
-│   │   ├── institutionalBias.ts # Institutional bias analysis
-│   │   ├── intradayEngine.ts    # Core intraday trading engine
-│   │   ├── messageBuilder.ts    # Message formatting
-│   │   └── strategyEngine.ts    # Strategy implementation
+│   │   ├── institutionalBias.ts      # Analyzes institutional bias
+│   │   ├── intradayEngine.ts         # Main intraday trading engine
+│   │   ├── messageBuilder.ts         # Constructs messages/notifications
+│   │   └── strategyEngine.ts         # Implements trading strategies
 │   ├── expiry/
-│   │   ├── capitalManager.ts    # Capital management for expiry
-│   │   ├── expiryEngine.ts      # Expiry management engine
-│   │   ├── hedgeManager.ts      # Hedging strategies
-│   │   ├── kiteStream.ts        # Kite Connect streaming
-│   │   ├── positionManager.ts   # Position management
-│   │   ├── riskManager.ts       # Risk management
-│   │   └── strengthEngine.ts    # Strength analysis
+│   │   ├── capitalManager.ts         # Manages capital during expiry
+│   │   ├── expiryEngine.ts           # Core expiry logic
+│   │   ├── hedgeManager.ts           # Manages hedging strategies
+│   │   ├── kiteStream.ts             # Zerodha Kite streaming utilities
+│   │   ├── positionManager.ts        # Position management
+│   │   ├── riskManager.ts            # Risk assessment and controls
+│   │   └── strengthEngine.ts         # Market strength analysis
 │   ├── options/
-│   │   └── optionEngine.ts      # Options strategy engine
-│   ├── login.ts                 # Authentication script
-│   ├── preMarket.ts             # Pre-market data processing
-│   └── types.ts                 # TypeScript types
+│   │   └── optionEngine.ts           # Options trading engine
+│   ├── login.ts                      # Zerodha Kite login script
+│   ├── preMarket.ts                  # Pre-market analysis
+│   └── types.ts                      # Type definitions
 ├── package.json
+├── package-lock.json
 ├── tsconfig.json
-└── ...
+├── .gitignore
+└── README.md
 ```
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+We welcome contributions!
 
-1. **Fork** the repository
-2. **Create** your feature branch (`git checkout -b feature/my-feature`)
-3. **Commit** your changes (`git commit -am 'Add new feature'`)
-4. **Push** to the branch (`git push origin feature/my-feature`)
-5. **Open a Pull Request**
+1. **Fork** the repository.
+2. **Create a branch** for your feature or fix:
+   ```bash
+   git checkout -b my-feature
+   ```
+3. **Commit** your changes and push to your fork.
+4. **Open a Pull Request** describing your changes.
+
+Please ensure your code adheres to project conventions and includes appropriate tests.
 
 ## License
 
-License information is not specified in this repository. Please contact the repository owner for details regarding usage and distribution.
+License information has not been specified. Please refer to the repository or contact the owner for details.
 
 ---
-[![README powered by ReadmeAI](https://img.shields.io/badge/README-powered%20by%20ReadmeAI-4c9be8?style=flat-square&logo=markdown)](https://readme-ai.com)
-
+[![README powered by ReadmeAI](https://img.shields.io/badge/README-powered%20by%20ReadmeAI-4c9be8?style=flat-square&logo=markdown)](https://www.readmeai.in)
