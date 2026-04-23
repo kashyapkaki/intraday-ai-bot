@@ -15,25 +15,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate README with ReadmeAI
-        run: |
-          RESPONSE=$(curl --silent --fail --max-time 120 \
-            -X POST "https://YOUR_READMEAI_API_URL/api/repo/generate-readme" \
-            -H "Content-Type: application/json" \
-            -d '{"repoUrl": "https://github.com/kashyapkaki/intraday-ai-bot"}')
-
-          SUCCESS=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['success'])")
-          if [ "$SUCCESS" != "True" ]; then
-            echo "ReadmeAI error: $(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('error','unknown'))")" 
-            exit 1
-          fi
-
-          python3 -c "import sys,json; print(json.load(sys.stdin)['content'])" <<< "$RESPONSE" > README.md
-          echo "README.md generated"
-
-      - name: Commit updated README
-        run: |
-          git config user.name  "ReadmeAI Bot"
-          git config user.email "bot@readme-ai.com"
-          git add README.md
-          git diff --staged --quiet || (git commit -m "docs: auto-update README via ReadmeAI" && git push)
+      - name: Regenerate README with ReadmeAI
+        uses: readme-ai/action@v1
+        with:
+          repo_url:     https://github.com/kashyapkaki/intraday-ai-bot
+          api_key:      ${{ secrets.README_AI_KEY }}
+          api_endpoint: https://www.readmeai.in
