@@ -28,13 +28,14 @@ jobs:
               "actor":     "'${{ github.actor }}'"
             }')
 
-          SUCCESS=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('success',''))")
+          SUCCESS=$(echo "$RESPONSE" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("success",""))')
           if [ "$SUCCESS" != "True" ]; then
-            echo "ReadmeAI error: $(echo \"$RESPONSE\" | python3 -c \"import sys,json; print(json.load(sys.stdin).get('error','unknown'))\")"
+            ERROR=$(echo "$RESPONSE" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("error","unknown"))')
+            echo "ReadmeAI error: $ERROR"
             exit 1
           fi
 
-          python3 -c "import sys,json; print(json.load(sys.stdin)['content'])" <<< "$RESPONSE" > README.md
+          echo "$RESPONSE" | python3 -c 'import sys,json; print(json.load(sys.stdin)["content"])' > README.md
           echo "README.md regenerated successfully."
 
       - name: Commit updated README
